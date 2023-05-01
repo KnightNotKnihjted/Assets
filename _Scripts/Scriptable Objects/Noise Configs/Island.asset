@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c235e225452f26743b665379d32756c4, type: 3}
+  m_Name: Island
+  m_EditorClassIdentifier: 
+  noise1: {fileID: 11400000, guid: 6f74ea6c71b902b42bd6ec777f33615d, type: 2}
+  noise2: {fileID: 11400000, guid: 419a0d9589add444f92ea24d75938ac4, type: 2}
+  update: 0

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5440475bcc633004483f19c025b50767, type: 3}
+  m_Name: Pine
+  m_EditorClassIdentifier: 
+  icon: {fileID: 1563211248, guid: 3cf93c038080427459d997717544cbed, type: 3}
+  worldSprite: {fileID: 1563211248, guid: 3cf93c038080427459d997717544cbed, type: 3}
+  maxStackSize: 64
+  itemName: Pine Log
+  tooltipOffset: {x: 0, y: 12.5}
+  growRange: {x: 2, y: 6}
+  generateBounds: {x: 0.5, y: 0.6}
+  ratioOfTotalLandTaken: 0.575
+  densityPerTileSquared: 0.25
+  treeTile: {fileID: 11400000, guid: eaa7f5717c4f06e4a93abdefb5dda745, type: 2}
+  woodName: Pine
+  woodLootTable: {fileID: 11400000, guid: 86a7d7f1746a78548bf4b36352a33ab1, type: 2}
+  headTreeSetting: {fileID: 11400000, guid: e9f06987cba5048499539224dcf762aa, type: 2}
+  bodyTreeSetting: {fileID: 11400000, guid: 4abd791a06436ea49a98197e4c8b5488, type: 2}
+  rootTreeSetting: {fileID: 11400000, guid: 3b76b8cf0ebbf4c4d8c3f09d860ac1c2, type: 2}

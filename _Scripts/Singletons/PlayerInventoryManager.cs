@@ -44,7 +44,6 @@ public class PlayerInventoryManager : InventoryManagerSingleton<PlayerInventoryM
         yield return new WaitForEndOfFrame();
         GlobalInputManager.InputMaster.Player.OpenInventory.performed += _ => UpdatePanel();
     }
-    public static Action<bool> onUpdatePanel = new ((x) => { });
     public override void UpdatePanel()
     {
         if (isDraggingItem && Panel.activeSelf)
@@ -52,8 +51,9 @@ public class PlayerInventoryManager : InventoryManagerSingleton<PlayerInventoryM
             DropItem(itemDragged.myItem, itemDragged.quantityHeld);
             onStopDraggingItem?.Invoke(itemDragged);
         }
-        onUpdatePanel?.Invoke(Panel.activeSelf);
-        Panel.SetActive(!Panel.activeSelf);
+        Panel.SetActive(!active);
+        active = Panel.activeSelf;
+        onPanelUpdate?.Invoke(active);
     }
     public static Action<UI_ItemObject> s_onStopDraggingItem = new ((x) => { });
     public static Action<UI_ItemObject> onStopDraggingItem = new ((x) => { });
@@ -138,7 +138,7 @@ public class PlayerInventoryManager : InventoryManagerSingleton<PlayerInventoryM
 
                                 if (left > 0)
                                 {
-                                    itemDragged.quantityHeld = left;
+                                    itemDragged.quantityHeld++;
                                     continue;
                                 }
                                 else
@@ -147,6 +147,27 @@ public class PlayerInventoryManager : InventoryManagerSingleton<PlayerInventoryM
                                     break;
                                 }
                             }
+                        }
+                    }
+                }
+                else
+                {
+
+                    {
+                        if (GlobalInputManager.InputMaster.Player.DropItem.IsPressed() ||
+                            GlobalInputManager.InputMaster.Player.RightClick.IsPressed())
+                        {
+                            DropItem(itemDragged.myItem, 1);
+                            itemDragged.quantityHeld--;
+                            if (itemDragged.quantityHeld <= 0)
+                            {
+                                onStopDraggingItem?.Invoke(itemDragged);
+                            }
+                        }
+                        else if (GlobalInputManager.InputMaster.Player.LeftClick.IsPressed())
+                        {
+                            DropItem(itemDragged.myItem, itemDragged.quantityHeld);
+                            onStopDraggingItem?.Invoke(itemDragged);
                         }
                     }
                 }

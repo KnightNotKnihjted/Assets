@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour, IPlayer
 {
     private Rigidbody2D rb;
 
+    public static Transform playerTransform;
+
     [SerializeField] private float m_moveSpeed;
     [SerializeField] private float m_dashSpeed;
     private Vector2 m_input;
@@ -15,6 +17,7 @@ public class PlayerController : MonoBehaviour, IPlayer
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        playerTransform = transform;
         GlobalInputManager.InputMaster.Player.Dash.performed += _ => Dash();
     }
     private void Update()

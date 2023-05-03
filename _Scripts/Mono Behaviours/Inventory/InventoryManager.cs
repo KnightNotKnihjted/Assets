@@ -50,6 +50,7 @@ public class InventoryManager : MonoBehaviour
         if(Panel.activeSelf == false) UpdatePanel();
         yield return new WaitForEndOfFrame();
         UpdatePanel();
+        Panel.SetActive(false);
     }
     public virtual void AddItem(Item _item, int _qty, out int leftovers)
     {

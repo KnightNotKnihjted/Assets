@@ -22,20 +22,25 @@ public class IslandGeneratorEditor : Editor
             generator.StartCoroutine(generator.GenerateIsland());
         }
 
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("biomes"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("landTile"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("waterTile"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("coastTile"));
 
         EditorToolbox.ValueToggle(showTilemaps, "Show Tilemaps? ", out showTilemaps, new List<SerializedProperty> {
             serializedObject.FindProperty("oceanTilemap"),
             serializedObject.FindProperty("shallowTilemap"),
             serializedObject.FindProperty("riverStartPointTilemap"),
+            serializedObject.FindProperty("coastTilemap"),
             serializedObject.FindProperty("landTilemap"),
             serializedObject.FindProperty("treesTilemap"),
             serializedObject.FindProperty("structureTilemap")
         });
         EditorToolbox.ValueToggle(showNoiseConfig, "Show Noise Config? ", out showNoiseConfig, new List<SerializedProperty> {
             serializedObject.FindProperty("seed"),
+            serializedObject.FindProperty("biomeNoiseMap"),
             serializedObject.FindProperty("noiseConfig"),
+            serializedObject.FindProperty("coastPeakHeight"),
             serializedObject.FindProperty("oceanPeakHeight")
         });
 

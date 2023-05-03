@@ -51,6 +51,7 @@ public class ItemWorldObject : MonoBehaviour
         }
         else if (other.TryGetComponent<IPlayer>(out _))
         {
+            QuestManager.ItemCollected(myItem, quantity);
             PlayerInventoryManager.i.AddItem(myItem, quantity, out quantity);
         }
     }

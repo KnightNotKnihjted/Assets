@@ -1,31 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class IslandGenerator : SingletonBehaviour<IslandGenerator>
 {
     public bool DEBUG = false;
+    public List<Biome> biomes;
 
     //Noise Config
     [SerializeReference]
     [SerializeField] private int seed;
+    [SerializeField] private NoiseConfigBase biomeNoiseMap;
     public NoiseConfigBase noiseConfig;
     private int width;
     private int height;
     [Range(0,1)]
+    [SerializeField] private float coastPeakHeight;
     [SerializeField] private float oceanPeakHeight;
 
     //Tilemaps
     [SerializeField] private Tilemap oceanTilemap;
     [SerializeField] private Tilemap shallowTilemap;
     [SerializeField] private Tilemap riverStartPointTilemap;
+    [SerializeField] private Tilemap coastTilemap;
     [SerializeField] private Tilemap landTilemap;
     [SerializeField] private Tilemap structureTilemap;
     [SerializeField] private Tilemap treesTilemap;
 
     //Other
     [SerializeField] private TileBase landTile;
+    [SerializeField] private TileBase coastTile;
     [SerializeField] private TileBase waterTile;
     //Structure Variables
     public bool generateRiver;
@@ -68,20 +74,31 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
     [ContextMenu("Generate Island")]
     public IEnumerator GenerateIsland()
     {
+        yield return null;
+        StartCoroutine(GenerateIslandAsync());
+    }
+    public IEnumerator GenerateIslandAsync()
+    {
         random = new System.Random(seed);
 
         GeneratePerlinNoiseIsland();
+        yield return null;
         //Structures
         if (generateCaves)
             yield return new WaitUntil(PlaceCaves);
-        if(generateVillages)
+            yield return null;
+        if (generateVillages)
             yield return new WaitUntil(PlaceVillages);
+            yield return null;
         if (generateTrees)
             yield return new WaitUntil(GenerateTrees);
+            yield return null;
         if (generateFountain)
             yield return new WaitUntil(PlaceFountains);
+            yield return null;
         if (generateRiver)
             yield return new WaitUntil(GenerateRivers);
+            yield return null;
     }
     private bool GenerateTrees()
     {
@@ -170,12 +187,12 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
 
         return false;
     }
-
-    void GeneratePerlinNoiseIsland()
+    private void GeneratePerlinNoiseIsland()
     {
         oceanTilemap.ClearAllTiles();
         shallowTilemap.ClearAllTiles();
         riverStartPointTilemap.ClearAllTiles();
+        coastTilemap.ClearAllTiles();
         landTilemap.ClearAllTiles();
         structureTilemap.ClearAllTiles();
         treesTilemap.ClearAllTiles();
@@ -204,13 +221,21 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
                     {
                         riverStartPointTilemap.SetTile(pos, riverStartPointTile);
                     }
+                    bool validLand = noise > coastPeakHeight - 0.0125f;
+                    bool validCoast = noise > oceanPeakHeight + 0.025f && !validLand;
+                    bool validOcean = noise < oceanPeakHeight - 0.0125f && !validLand;
                     /*Land */
-                    if (noise > oceanPeakHeight + 0.025f)
+                    if (validLand)
                     {
                         landTilemap.SetTile(pos, landTile);
                     }
+                    /*Coast */
+                    if (validCoast)
+                    {
+                        coastTilemap.SetTile(pos, coastTile);
+                    }
                     /*Ocean*/
-                    else
+                    if(validOcean)
                     {
                         oceanTilemap.SetTile(pos, waterTile);
                     }
@@ -235,8 +260,30 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
             Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
             sr.sprite = sprite;
         }
+        else
+        {
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    Vector3Int position = new Vector3Int(x, y, 0);
+                    if (landTilemap.GetTile(position) == landTile)
+                    {
+                        float noiseValue = biomeNoiseMap.GetNoiseValue(x, y, seed);
+                        foreach (Biome biome in biomes)
+                        {
+                            if (noiseValue >= biome.minThreshold && noiseValue <= biome.maxThreshold && GetEmptyLandTiles().Contains(position))
+                            {
+                                landTilemap.SetTile(position, biome.landTile);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
-    List<Vector3Int> GetEmptyLandTiles()
+    private List<Vector3Int> GetEmptyLandTiles()
     {
         List<Vector3Int> emptyTiles = new ();
 
@@ -254,7 +301,7 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
 
         return emptyTiles;
     }
-    List<Vector3Int> GetRiverStartPoints()
+    private List<Vector3Int> GetRiverStartPoints()
     {
         List<Vector3Int> emptyTiles = new ();
 
@@ -272,7 +319,7 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
 
         return emptyTiles;
     }
-    bool PlaceCaves()
+    private bool PlaceCaves()
     {
         Vector2Int center = new(width / 2, height / 2);
         int maxAttempts = 8;
@@ -314,7 +361,7 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
         }
         return true;
     }
-    bool GenerateRivers()
+    private bool GenerateRivers()
     {
         List<Vector3Int> riverStarts = GetRiverStartPoints();
         for (int i = 0; i < riverCount; i++)
@@ -386,7 +433,7 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
         }
         return true;
     }
-    bool PlaceVillages()
+    private bool PlaceVillages()
     {
 
         int placedVillages = 0;
@@ -431,7 +478,7 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
         }
         return true;
     }
-    bool PlaceFountains()
+    private bool PlaceFountains()
     {
         for (int x = 0; x < width; x += 16)
         {

@@ -53,6 +53,10 @@ public class PlayerInventoryManager : InventoryManagerSingleton<PlayerInventoryM
         }
         Panel.SetActive(!active);
         active = Panel.activeSelf;
+        if (!active)
+        {
+            otherInventoryManager = null;
+        }
         onPanelUpdate?.Invoke(active);
     }
     public static Action<UI_ItemObject> s_onStopDraggingItem = new ((x) => { });
@@ -173,63 +177,69 @@ public class PlayerInventoryManager : InventoryManagerSingleton<PlayerInventoryM
                 }
             }
 
-            for (int i = 0; i < Slots.Count; i++)
+            if (Panel.activeSelf)
             {
-                if (Slots[i] == null) continue;
-                if (itemDragged == null) continue;
-                if (!Slots[i].IsMouseOver()) continue;
-                if (Slots[i].GetItem() != itemDragged.myItem && Slots[i].GetItem() != null)
+                for (int i = 0; i < Slots.Count; i++)
                 {
-                    //Check If they Clicked
-                    if (!(GlobalInputManager.InputMaster.Player.LeftClick.WasPerformedThisFrame() ||
-                        GlobalInputManager.InputMaster.Player.RightClick.WasPerformedThisFrame())) continue;
+                    if (Slots[i] == null) continue;
+                    if (itemDragged == null) continue;
+                    if (!Slots[i].IsMouseOver()) continue;
+                    if (Slots[i].GetItem() != itemDragged.myItem && Slots[i].GetItem() != null)
+                    {
+                        //Check If they Clicked
+                        if (!(GlobalInputManager.InputMaster.Player.LeftClick.WasPerformedThisFrame() ||
+                            GlobalInputManager.InputMaster.Player.RightClick.WasPerformedThisFrame())) continue;
 
-                    //Swap Item Logic
-                    Item itm = itemDragged.myItem;
-                    int qty = itemDragged.quantityHeld;
-                    itemDragged.myItem = Slots[i].GetItem();
-                    itemDragged.quantityHeld = Slots[i].GetItemQuantity();
-                    Slots[i].SetValue(itm, qty);
+                        //Swap Item Logic
+                        Item itm = itemDragged.myItem;
+                        int qty = itemDragged.quantityHeld;
+                        itemDragged.myItem = Slots[i].GetItem();
+                        itemDragged.quantityHeld = Slots[i].GetItemQuantity();
+                        Slots[i].SetValue(itm, qty);
+                    }
+                    if (Slots[i].GetItem() != null && Slots[i].GetItem() != itemDragged.myItem) continue;
+
+                    if (GlobalInputManager.InputMaster.Player.LeftClick.WasPerformedThisFrame())
+                    {
+                        // Calculate the quantity that can be added to the target slot
+                        int spaceAvailable = Slots[i].GetItem() == null ? itemDragged.myItem.MaxStackSize : itemDragged.myItem.MaxStackSize - Slots[i].GetItemQuantity();
+
+                        if (spaceAvailable > 0)
+                        {
+                            int quantityToAdd = Mathf.Min(spaceAvailable, itemDragged.quantityHeld);
+                            Slots[i].TryAddItem(itemDragged.myItem, quantityToAdd, out _);
+                            itemDragged.quantityHeld -= quantityToAdd;
+                        }
+
+                        if (itemDragged.quantityHeld == 0)
+                        {
+                            onStopDraggingItem?.Invoke(itemDragged);
+                        }
+                    }
+                    else if (GlobalInputManager.InputMaster.Player.RightClick.WasPerformedThisFrame())
+                    {
+                        // Calculate the quantity that can be added to the target slot
+                        int spaceAvailable = Slots[i].GetItem() == null ? itemDragged.myItem.MaxStackSize : itemDragged.myItem.MaxStackSize - Slots[i].GetItemQuantity();
+
+                        if (spaceAvailable > 0)
+                        {
+                            Slots[i].TryAddItem(itemDragged.myItem, 1, out _);
+                            itemDragged.quantityHeld -= 1;
+                        }
+
+                        if (itemDragged.quantityHeld == 0)
+                        {
+                            onStopDraggingItem?.Invoke(itemDragged);
+                        }
+                    }
+
+
                 }
-                if (Slots[i].GetItem() != null && Slots[i].GetItem() != itemDragged.myItem) continue;
-
-                if (GlobalInputManager.InputMaster.Player.LeftClick.WasPerformedThisFrame())
-                {
-                    // Calculate the quantity that can be added to the target slot
-                    int spaceAvailable = Slots[i].GetItem() == null ? itemDragged.myItem.MaxStackSize : itemDragged.myItem.MaxStackSize - Slots[i].GetItemQuantity();
-
-                    if (spaceAvailable > 0)
-                    {
-                        int quantityToAdd = Mathf.Min(spaceAvailable, itemDragged.quantityHeld);
-                        Slots[i].TryAddItem(itemDragged.myItem, quantityToAdd, out _);
-                        itemDragged.quantityHeld -= quantityToAdd;
-                    }
-
-                    if (itemDragged.quantityHeld == 0)
-                    {
-                        onStopDraggingItem?.Invoke(itemDragged);
-                    }
-                }
-                else if (GlobalInputManager.InputMaster.Player.RightClick.WasPerformedThisFrame())
-                {
-                    // Calculate the quantity that can be added to the target slot
-                    int spaceAvailable = Slots[i].GetItem() == null ? itemDragged.myItem.MaxStackSize : itemDragged.myItem.MaxStackSize - Slots[i].GetItemQuantity();
-
-                    if (spaceAvailable > 0)
-                    {
-                        Slots[i].TryAddItem(itemDragged.myItem, 1, out _);
-                        itemDragged.quantityHeld -= 1;
-                    }
-
-                    if (itemDragged.quantityHeld == 0)
-                    {
-                        onStopDraggingItem?.Invoke(itemDragged);
-                    }
-                }
-
 
             }
+
         }
+
     }
     public static void SpawnItem(Item itm, int qty, Vector3 pos)
     {

@@ -5,10 +5,15 @@ using UnityEngine;
 [CreateAssetMenu(fileName ="New Item",menuName ="Scriptables/Item")]
 public class Item : ScriptableObject
 {
+    [SerializeField]
     private Sprite icon;
+    [SerializeField]
     private Sprite worldSprite;
+    [SerializeField]
     private int maxStackSize;
+    [SerializeField]
     private string itemName;
+    [SerializeField]
     private Vector2 tooltipOffset = Vector2.up * 12.5f;
 
     public void SetValue(Item storedItem)

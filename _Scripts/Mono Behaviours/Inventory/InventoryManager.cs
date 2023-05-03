@@ -10,30 +10,43 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private GameObject panel;
     [SerializeField] private RectTransform inventoryPanel;
     private List<UI_InventorySlot> slots = new();
-
-    private void Awake()
+    private static List<InventoryManager> inventoryManagers = new();
+    public bool active = true;
+    private void OnEnable()
     {
-        onUpdate = (active) =>
-        {
-            if (Panel.activeSelf && !active)
-            {
-                PlayerInventoryManager.i.otherInventoryManager = this;
-            }
-            else if (!(PlayerInventoryManager.i.otherInventoryManager != null &&
-           PlayerInventoryManager.i.otherInventoryManager != this))
-            {
-                //Someone is turning off
-                PlayerInventoryManager.i.otherInventoryManager = null;
-            }
-        };
+        inventoryManagers.Add(this);
     }
-
+    private void OnDisable()
+    {
+        if (inventoryManagers.Contains(this))
+        {
+            inventoryManagers.Remove(this);
+        }
+    }
+    private void OnDestroy()
+    {
+        if (inventoryManagers.Contains(this))
+        {
+            inventoryManagers.Remove(this);
+        }
+    }
     public GameObject Panel { get => panel; set => panel = value; }
     public RectTransform InventoryPanel { get => inventoryPanel; set => inventoryPanel = value; }
     public List<UI_InventorySlot> Slots { get => slots; set => slots = value; }
 
     public virtual IEnumerator Start()
     {
+        playerPanelUpd = (act) =>
+        {
+            if (active)
+            {
+                if (act)
+                {
+                    PlayerInventoryManager.i.otherInventoryManager = this;
+                }
+            }
+        };
+
         if(Panel.activeSelf == false) UpdatePanel();
         yield return new WaitForEndOfFrame();
         UpdatePanel();
@@ -69,6 +82,20 @@ public class InventoryManager : MonoBehaviour
             }
         }
     }
+    public int GetCountOfItemType(Item targetType)
+    {
+        int qty = 0;
+
+        foreach (UI_InventorySlot slot in Slots)
+        {
+            if(slot.GetItem() == targetType)
+            {
+                qty+=slot.GetItemQuantity();
+            }
+        }
+
+        return qty;
+    }
     public int CollectAllItemsOfType(Item targetType, int maxStackSize, UI_InventorySlot targetSlot)
     {
         int totalQuantity = targetSlot.GetItemQuantity();
@@ -96,12 +123,19 @@ public class InventoryManager : MonoBehaviour
         // Add the items back into the target slot.
         int spaceAvailable = maxStackSize - targetSlot.GetItemQuantity();
         int quantityToAdd = Mathf.Min(spaceAvailable, totalQuantity);
-        AddItem(targetType, quantityToAdd, out _);
+        if (targetSlot != null)
+        {
+            targetSlot.TryAddItem(targetType, quantityToAdd, out int left);
+            quantityToAdd = left;
+        }
+        if(quantityToAdd > 0)
+        {
+            AddItem(targetType, quantityToAdd, out _);
+        }
 
         return quantityToAdd;
     }
-
-    public virtual bool RemoveItem(Item _item, int _qty)
+    public virtual bool RemoveItem(Item _item, int _qty, bool dropOnRemove = true)
     {
         bool hasSpace = false;
 
@@ -123,7 +157,10 @@ public class InventoryManager : MonoBehaviour
             reward += () =>
             {
                 slots[j].RemoveItem(removable);
-                PlayerInventoryManager.DropItem(item, removable);
+                if (dropOnRemove)
+                {
+                    PlayerInventoryManager.DropItem(item, removable);
+                }
             };
 
             if (qty <= 0)
@@ -138,27 +175,50 @@ public class InventoryManager : MonoBehaviour
             //Give Out The Reward
             reward?.Invoke();
 
-            Destroy(PlayerInventoryManager.i.itemDragged.gameObject);
-            PlayerInventoryManager.i.itemDragged = null;
+            if (PlayerInventoryManager.isDraggingItem)
+            {
+                Destroy(PlayerInventoryManager.i.itemDragged.gameObject);
+                PlayerInventoryManager.i.itemDragged = null;
+            }
         }
 
         return hasSpace;
     }
-    private Action<bool> onUpdate = new (_ => { });
+    public Action<bool> onPanelUpdate = new((_) => { });
+    private Action<bool> playerPanelUpd = new((_) => { });
     public virtual void UpdatePanel()
     {
-        //True means we are on now! Else we are off!
-        if (Panel.activeSelf)
+        //Only If We Wanna Turn On
+        if (!active)
         {
-            PlayerInventoryManager.i.otherInventoryManager = null;
-            PlayerInventoryManager.onUpdatePanel -= onUpdate;
+            PlayerInventoryManager.i.onPanelUpdate += playerPanelUpd;
+
+            PlayerInventoryManager.i.onPanelUpdate?.Invoke(PlayerInventoryManager.i.active);
+
+            foreach (var im in inventoryManagers)
+            {
+                if (im == this) continue;
+                if (im == PlayerInventoryManager.i) continue;
+
+                //If IM is on then close it
+                if (im.active == true)
+                {
+                    if (PlayerInventoryManager.i.active == true)
+                    {
+                        if (PlayerInventoryManager.i.otherInventoryManager == im)
+                        {
+                            PlayerInventoryManager.i.otherInventoryManager = this;
+                        }
+                    }
+                    im.UpdatePanel();
+                }
+            }
         }
         else
         {
-            PlayerInventoryManager.i.otherInventoryManager = this;
-            PlayerInventoryManager.onUpdatePanel += onUpdate;
+            PlayerInventoryManager.i.onPanelUpdate -= playerPanelUpd;
         }
-
-        Panel.SetActive(!Panel.activeSelf);
+        Panel.SetActive(!active);
+        active = Panel.activeSelf;
     }
 }

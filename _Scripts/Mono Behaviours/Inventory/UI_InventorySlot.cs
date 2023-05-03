@@ -11,7 +11,7 @@ public class UI_InventorySlot : MonoBehaviour
     public InventoryManager im;
 
     [SerializeField] private TMP_Text quantityLabelRef;
-    [SerializeField] private Image iconDisplay;
+    public Image iconDisplay;
     private Item storedItem;
     private int itemQuantity = 0;
 
@@ -31,11 +31,13 @@ public class UI_InventorySlot : MonoBehaviour
             return 0; // or throw an exception, or return a default value
         }
     }
+    public bool isReadOnly;
+    public bool isAutoAdd = true;
     private void Update()
     {
         if (itemQuantity == 0) storedItem = null;
 
-        if (im != null)
+        if (im != null && isAutoAdd)
         {
             if (im.Slots.Contains(this) == false)
             {
@@ -65,6 +67,7 @@ public class UI_InventorySlot : MonoBehaviour
             iconDisplay.sprite = null;
         }
 
+        if (isReadOnly) return;
         if (IsMouseOver())
         {
             //Tooltip

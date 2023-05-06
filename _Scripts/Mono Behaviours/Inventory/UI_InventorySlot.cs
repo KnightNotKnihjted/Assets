@@ -37,19 +37,22 @@ public class UI_InventorySlot : MonoBehaviour
     {
         if (itemQuantity == 0) storedItem = null;
 
-        if (im != null && isAutoAdd)
+        if (isAutoAdd)
         {
-            if (im.Slots.Contains(this) == false)
+            if (im != null)
             {
-                im.Slots.Add(this);
-                im.Slots.Sort((x, y) =>
+                if (im.Slots.Contains(this) == false)
                 {
-                    int xNumber = Extract(x.name);
-                    int yNumber = Extract(y.name);
+                    im.Slots.Add(this);
+                    im.Slots.Sort((x, y) =>
+                    {
+                        int xNumber = Extract(x.name);
+                        int yNumber = Extract(y.name);
 
                     // Compare the numerical values
                     return xNumber.CompareTo(yNumber);
-                });
+                    });
+                }
             }
         }
 
@@ -106,7 +109,8 @@ public class UI_InventorySlot : MonoBehaviour
                 }
             }
 
-            //Gather All  2Tap L-Click
+            #region Gather All  2Tap L-Click
+            /*
             if (GlobalInputManager.DoubleTap(GlobalInputManager.InputMaster.Player.LeftClick))
             {
                 if (storedItem != null && im != null)
@@ -127,8 +131,11 @@ public class UI_InventorySlot : MonoBehaviour
                     }
                 }
             }
+            
             //Drag Handle    L-Click
-            else if (GlobalInputManager.InputMaster.Player.LeftClick.WasPressedThisFrame())
+            else*/
+            #endregion
+            if (GlobalInputManager.InputMaster.Player.LeftClick.WasPressedThisFrame())
             {
                 if (PlayerInventoryManager.isDraggingItem == false)
                 {

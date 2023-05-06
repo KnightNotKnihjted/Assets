@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfc43152685514b40a5d4c1cfab47a5a, type: 3}
+  m_Name: FishyCommon
+  m_EditorClassIdentifier: 
+  lootTableValues:
+  - item: {fileID: 11400000, guid: 056399d82785b694ea9741e4614d03fb, type: 2}
+    quantities:
+    - prize: 3
+      chance: 0.7
+    - prize: 5
+      chance: 0.25
+  - item: {fileID: 11400000, guid: 2c0a65496a03317498b28ffa580c431c, type: 2}
+    quantities:
+    - prize: 1
+      chance: 0.5
+    - prize: 3
+      chance: 0.25
+  - item: {fileID: 11400000, guid: e2bdb218af4a0ea44b4fc77408b7122a, type: 2}
+    quantities:
+    - prize: 1
+      chance: 1
+    - prize: 3
+      chance: 0.65
+    - prize: 6
+      chance: 0.35
+    - prize: 11
+      chance: 0.3

@@ -47,22 +47,17 @@
           "text":"What Do You Want?",
           "options": [
             {
-              "text": "Can I Craft?",
-              "eventId": "Workbench",
-              "action": "EndDialogue"
-            },
-            {
-              "text": "I Got The Logs",
+              "text": "...About The Logs",
               "action":"GoToLine",
               "goToLine":2
             },
             {
-              "text": "Nevermind, Bye!",
+              "text": "...Can I Craft Please",
+              "eventId":"Workbench",
               "action":"EndDialogue"
             },
             {
-              "text": "Nevermind, Bye!",
-              "eventId":"NewQuest",
+              "text": "...Nevermind, Bye!",
               "action":"EndDialogue"
             }
           ]
@@ -113,7 +108,136 @@
         },
         {
           "character": "???",
-          "text": "Great! Here Take This Fishing Rod, Go Get The Crystal Follow The Mark On Your Map!"
+          "text": "I Need You To Get A Feather From The Chicken,"
+        },
+        {
+          "character": "???",
+          "text": "I Need You To Craft A Stick, Try Talking To Talk To Me Again,"
+        },
+        {
+          "character": "???",
+          "text": "Lastly, I need Some String That'll Be Somewhere",
+          "conditions": [
+            {
+              "key":"",
+              "value":"",
+              "yes": {
+                "eventId":"NewQuest",
+                "action":"EndDialogue"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "lines": [
+        {
+          "character": "???",
+          "text":"Your're Back?",
+          "options": [
+            {
+              "text": "...About The Stuff",
+              "action":"GoToLine",
+              "goToLine":2
+            },
+            {
+              "text": "...Can I Craft Please",
+              "eventId":"Workbench",
+              "action":"EndDialogue"
+            },
+            {
+              "text": "...Nevermind, Bye!",
+              "action":"EndDialogue"
+            }
+          ]
+        },
+        {
+          "character": "???",
+          "text": "You Have The Stuff Right",
+          "options": [],
+          "conditions": [
+            {
+              "key":"item",
+              "value":"_Wire_2",
+              "yes": {
+                "eventId":"DoNothing",
+                "action":"GoToLine",
+                "goToLine":5
+              },
+              "no": {
+                "eventId":"",
+                "action":"",
+                "goToLine":0
+              }
+            },
+            {
+              "key":"item",
+              "value":"_Stick_1",
+              "yes": {
+                "eventId":"DoNothing",
+                "action":"GoToLine",
+                "goToLine":5
+              },
+              "no": {
+                "eventId":"",
+                "action":"",
+                "goToLine":0
+              }
+            },
+            {
+              "key":"item",
+              "value":"_Feather_1",
+              "yes": {
+                "eventId":"DoNothing",
+                "action":"GoToLine",
+                "goToLine":5
+              },
+              "no": {
+                "eventId":"",
+                "action":"",
+                "goToLine":0
+              }
+            }
+          ]
+        },
+        {
+          "character": "You",
+          "text": "Nope!"
+        },
+        {
+          "character": "???",
+          "text": "Why Are You So Proud?! Go Get The Stuff Then!",
+          "options": [],
+          "conditions": [
+            {
+              "key":"",
+              "value":"",
+              "yes": {
+                "eventId":"DoNothing",
+                "action":"EndDialogue"
+              }
+            }
+          ]
+        },
+        {
+          "character": "You",
+          "text": "Yeah Of Course!"
+        },
+        {
+          "character": "???",
+          "text": "Great! Come Back Here With The Wire I Marked On The Map",
+          "conditions": [
+            {
+              "key":"",
+              "value":"",
+              "yes": {
+                "eventId":"NewQuest",
+                "action":"EndDialogue"
+              }
+            }
+          ]
         }
       ]
     }

@@ -14,7 +14,7 @@ public class WorkBench : InventoryManager
     public UI_InventorySlot individualRecipe;
     public UI_InventorySlot recipeResultSlotPrefab;
     [SerializeField] private UI_RecipeObject recipeObjectPrefab;
-    [SerializeField] private UI_InventorySlot resultSlot;
+    public UI_InventorySlot resultSlot;
     public RectTransform contentRect;
     [SerializeField] private Recipe[] recipes;
 
@@ -22,7 +22,7 @@ public class WorkBench : InventoryManager
     {
         DialogueManager.i.questWorkbench = this;
         StartCoroutine(base.Start());
-        yield return new WaitForSeconds(0);
+        yield return null;
         float y = 0;
         for (int i = 0; i < recipes.Length; i++)
         {
@@ -90,7 +90,20 @@ public class WorkBench : InventoryManager
         }
 
         // Set the crafted item in the result slot
-        resultSlot.SetValue(recipe.rightSide.item, recipe.rightSide.quantity);
+        resultSlot.TryAddItem(recipe.rightSide.item, recipe.rightSide.quantity, out int leftovers);
+        int qty = leftovers;
+        if(qty > 0)
+        {
+            PlayerInventoryManager.i.AddItem(recipe.rightSide.item, leftovers, out qty);
+            if (qty > 0) {
+                AddItem(recipe.rightSide.item, qty, out qty);
+                if (qty > 0)
+                {
+                    PlayerInventoryManager.DropItem(recipe.rightSide.item, qty);
+                }
+            }
+        }
+        QuestManager.ItemCollected(recipe.rightSide.item, recipe.rightSide.quantity - qty);
     }
 
 }

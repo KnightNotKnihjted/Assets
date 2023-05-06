@@ -6,7 +6,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName ="New WoodType",menuName ="Scriptables/Wood Type")]
 public class WoodType : Item
 {
-    public Vector2Int growRange = new (2, 5 + 1);
     public Vector2 generateBounds = new(0.5f, 0.6f);
 
     public float ratioOfTotalLandTaken = 0.1f;
@@ -16,7 +15,5 @@ public class WoodType : Item
     public string woodName;
 
     public LootTable woodLootTable;
-    public TreeSettings headTreeSetting;
-    public TreeSettings bodyTreeSetting;
-    public TreeSettings rootTreeSetting;
+    public TreeLog prefab;
 }

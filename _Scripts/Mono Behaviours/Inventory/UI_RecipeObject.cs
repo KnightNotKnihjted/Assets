@@ -17,7 +17,6 @@ public class UI_RecipeObject : MonoBehaviour
     {
         rows = 1;
         RectTransform currentRow = Instantiate(im.rowPrefab, leftSideParent);
-        butt = null;
 
         for (int i = 0; i < myRecipe.leftSide.Length; i++)
         {

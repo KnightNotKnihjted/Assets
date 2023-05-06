@@ -68,8 +68,7 @@ public class IslandGeneratorEditor : Editor
             serializedObject.FindProperty("maxDistFromCentre")
         });
         EditorToolbox.ValueToggle(generator.generateFountain, "Generate Fountain? ", out generator.generateFountain, new List<SerializedProperty> {
-            serializedObject.FindProperty("fountainTile"),
-            serializedObject.FindProperty("fountainSpawnRate")
+            serializedObject.FindProperty("structures")
         });
 
 

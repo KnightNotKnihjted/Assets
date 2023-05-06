@@ -1,0 +1,121 @@
+{
+  "dialogues": [
+    {
+      "id": "1",
+      "lines": [
+        {
+          "character": "You",
+          "text": "Who Are You"
+        },
+        {
+          "character": "???",
+          "text": "..."
+        },
+        {
+          "character": "???",
+          "text": "..."
+        },
+        {
+          "character": "You",
+          "text": "Ok, Well Where Am I?"
+        },
+        {
+          "character": "???",
+          "text": "..."
+        },
+        {
+          "character": "You",
+          "text": "Fine, I See How It Is, At Least Give Me Directi-"
+        },
+        {
+          "character": "???",
+          "text": "Come Back To Me With 10 Logs",
+          "options": [
+            {
+              "text": "Okay, I'll Come Back",
+              "eventId": "NewQuest"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "lines": [
+        {
+          "character": "???",
+          "text":"What Do You Want?",
+          "options": [
+            {
+              "text": "Can I Craft?",
+              "eventId": "Workbench",
+              "action": "EndDialogue"
+            },
+            {
+              "text": "I Got The Logs",
+              "action":"GoToLine",
+              "goToLine":2
+            },
+            {
+              "text": "Nevermind, Bye!",
+              "action":"EndDialogue"
+            },
+            {
+              "text": "Nevermind, Bye!",
+              "eventId":"NewQuest",
+              "action":"EndDialogue"
+            }
+          ]
+        },
+        {
+          "character": "???",
+          "text": "You Got The Logs Right?",
+          "options": [],
+          "conditions": [
+            {
+              "key":"item",
+              "value":"_Pine_10",
+              "yes": {
+                "eventId":"DoNothing",
+                "action":"GoToLine",
+                "goToLine":5
+              },
+              "no": {
+                "eventId":"",
+                "action":"",
+                "goToLine":0
+              }
+            }
+          ]
+        },
+        {
+          "character": "You",
+          "text": "Urm... No..."
+        },
+        {
+          "character": "???",
+          "text": "Go Get It Then!",
+          "options": [],
+          "conditions": [
+            {
+              "key":"",
+              "value":"",
+              "yes": {
+                "eventId":"DoNothing",
+                "action":"EndDialogue"
+              }
+            }
+          ]
+        },
+        {
+          "character": "You",
+          "text": "Yeah Of Course!"
+        },
+        {
+          "character": "???",
+          "text": "Great! Here Take This Fishing Rod, Go Get The Crystal Follow The Mark On Your Map!"
+        }
+      ]
+    }
+  ]
+}

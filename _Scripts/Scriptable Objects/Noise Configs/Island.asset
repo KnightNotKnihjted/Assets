@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c235e225452f26743b665379d32756c4, type: 3}
+  m_Script: {fileID: 11500000, guid: f1ff6050a6e95d64e9889906f2571053, type: 3}
   m_Name: Island
   m_EditorClassIdentifier: 
-  noise1: {fileID: 11400000, guid: 6f74ea6c71b902b42bd6ec777f33615d, type: 2}
-  noise2: {fileID: 11400000, guid: 419a0d9589add444f92ea24d75938ac4, type: 2}
+  noise1: {fileID: 11400000, guid: d64f5588bb8b81545bab301835c2a783, type: 2}
+  noise2: {fileID: 11400000, guid: d38a127e54583f54bac76403426fba36, type: 2}
   update: 0

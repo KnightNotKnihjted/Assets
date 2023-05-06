@@ -21,10 +21,10 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
     [SerializeField] private float oceanPeakHeight;
 
     //Tilemaps
-    [SerializeField] private Tilemap oceanTilemap;
+    public Tilemap oceanTilemap;
     [SerializeField] private Tilemap shallowTilemap;
     [SerializeField] private Tilemap riverStartPointTilemap;
-    [SerializeField] private Tilemap coastTilemap;
+    public Tilemap coastTilemap;
     [SerializeField] private Tilemap landTilemap;
     [SerializeField] private Tilemap structureTilemap;
     [SerializeField] private Tilemap treesTilemap;
@@ -221,9 +221,9 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
                     {
                         riverStartPointTilemap.SetTile(pos, riverStartPointTile);
                     }
-                    bool validLand = noise > coastPeakHeight - 0.0125f;
-                    bool validCoast = noise > oceanPeakHeight + 0.025f && !validLand;
-                    bool validOcean = noise < oceanPeakHeight - 0.0125f && !validLand;
+                    bool validLand = noise > coastPeakHeight;
+                    bool validCoast = noise > oceanPeakHeight - 0.025f;
+                    bool validOcean = noise < oceanPeakHeight + 0.025f;
                     /*Land */
                     if (validLand)
                     {
@@ -262,20 +262,24 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
         }
         else
         {
-            for (int x = 0; x < width; x++)
+            bool generateBiomes = false;
+            if (generateBiomes)
             {
-                for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
                 {
-                    Vector3Int position = new Vector3Int(x, y, 0);
-                    if (landTilemap.GetTile(position) == landTile)
+                    for (int y = 0; y < height; y++)
                     {
-                        float noiseValue = biomeNoiseMap.GetNoiseValue(x, y, seed);
-                        foreach (Biome biome in biomes)
+                        Vector3Int position = new Vector3Int(x, y, 0);
+                        if (landTilemap.GetTile(position) == landTile)
                         {
-                            if (noiseValue >= biome.minThreshold && noiseValue <= biome.maxThreshold && GetEmptyLandTiles().Contains(position))
+                            float noiseValue = biomeNoiseMap.GetNoiseValue(x, y, seed);
+                            foreach (Biome biome in biomes)
                             {
-                                landTilemap.SetTile(position, biome.landTile);
-                                break;
+                                if (noiseValue >= biome.minThreshold && noiseValue <= biome.maxThreshold && GetEmptyLandTiles().Contains(position))
+                                {
+                                    landTilemap.SetTile(position, biome.landTile);
+                                    break;
+                                }
                             }
                         }
                     }
@@ -470,6 +474,7 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
                     }
                 }
                 Vector3Int pos = new(x, y, 0);
+                PlayerController.playerTransform.position = pos;
                 if(DEBUG)
                     print($"Generated Village {placedVillages + 1} At: {pos}");
                 structureTilemap.SetTile(pos, villageTile);

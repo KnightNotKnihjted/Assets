@@ -20,6 +20,7 @@ public class WorkBench : InventoryManager
 
     public override IEnumerator Start()
     {
+        DialogueManager.i.questWorkbench = this;
         StartCoroutine(base.Start());
         yield return new WaitForSeconds(0);
         float y = 0;

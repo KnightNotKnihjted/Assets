@@ -24,9 +24,23 @@ public class UI_Quest : MonoBehaviour
         fullY = defaultY;
         foreach(QuestObjective objective in m_quest.Objectives)
         {
-            Instantiate(ui_QuestObjectivePrefab, objectivesRect).m_questObjective = objective;
+            if (objective is LocationObjective) continue;
+            UI_Objective obj = Instantiate(ui_QuestObjectivePrefab, objectivesRect);
+            obj.m_questObjective = objective;
             fullY += objectiveYSize;
+
+            objective.OnComplete += () =>
+            {
+                if (obj != null)
+                {
+                    if (obj.gameObject != null)
+                    {
+                        Destroy(obj.gameObject);
+                    }
+                }
+            };
         }
+        Destroy(gameObject, 60f);
     }
 
     private void Update()

@@ -45,6 +45,7 @@ public class LocationObjective : QuestObjective
         }
     }
 }
+
 public class ItemRetrievalObjective : QuestObjective
 {
     public Item item;

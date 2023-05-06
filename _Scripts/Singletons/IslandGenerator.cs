@@ -57,8 +57,16 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
     [SerializeField] private int maxDistFromCentre = 48;
 
     public bool generateFountain;
-    [SerializeField] private TileBase fountainTile;
-    [SerializeField] private float fountainSpawnRate;
+    [SerializeField] private List<SingleTileStructure> structures = new();
+    [System.Serializable]
+    public class SingleTileStructure
+    {
+        public string name;
+        public TileBase structureTile;
+        public float structureSpawnRate;
+        public int structurePerChunk = 3;
+        public int maxPerWholeMap = 96;
+    }
 
     private System.Random random;
 
@@ -129,19 +137,24 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
                     {
                         if (DEBUG)
                         {
-                            Color treeColor = new (combinedNoise, i * 30f, 0, 1); // You can customize this color for each tree type if you want
+                            Color treeColor = new(combinedNoise, i * 30f, 0, 1); // You can customize this color for each tree type if you want
                             tex.SetPixel(x, y, treeColor);
                         }
                         else
                         {
                             treesTilemap.SetTile(position, woodType.treeTile);
+                            float dist1 = Vector3.Distance(PlayerController.playerTransform.position, QuestManager.i.treesLocation.position);
+                            float dist2 = Vector3.Distance(PlayerController.playerTransform.position, position);
+                            if (dist2 < dist1)
+                            {
+                                QuestManager.i.treesLocation.position = position;
+                            }
                         }
                     }
                     i++;
                 }
             }
         }
-
         if (DEBUG)
         {
             tex.Apply();
@@ -485,23 +498,53 @@ public class IslandGenerator : SingletonBehaviour<IslandGenerator>
     }
     private bool PlaceFountains()
     {
-        for (int x = 0; x < width; x += 16)
+        foreach (SingleTileStructure structure in structures)
         {
-            for (int y = 0; y < height; y += 16)
+            int currentTotal = 0;
+            for (int x = 0; x < width; x += 16)
             {
-                if (random.NextDouble() < fountainSpawnRate)
+                for (int y = 0; y < height; y += 16)
                 {
-                    int fountainX = random.Next(x, x + 16);
-                    int fountainY = random.Next(y, y + 16);
-
-                    Vector3Int position = new(fountainX, fountainY, 0);
-                    if (landTilemap.GetTile(position) == landTile)
+                    if (currentTotal >= structure.maxPerWholeMap) continue;
+                    for (int i = 0; i < structure.structurePerChunk; i++)
                     {
-                        structureTilemap.SetTile(position, fountainTile);
-                        if(DEBUG)
-                            print($"Generated Fountain At: {position}");
+                        if (random.NextDouble() < structure.structureSpawnRate)
+                        {
+                            int fountainX = random.Next(x, x + 16);
+                            int fountainY = random.Next(y, y + 16);
+
+                            Vector3Int position = new(fountainX, fountainY, 0);
+                            if (GetEmptyLandTiles().Contains(position))
+                            {
+                                structureTilemap.SetTile(position, structure.structureTile);
+                                currentTotal++;
+
+                                if (structure.name.ToUpper() == "CHIMCKEN")
+                                {
+                                    float dist1 = Vector3.Distance(PlayerController.playerTransform.position, QuestManager.i.chmcken.position);
+                                    float dist2 = Vector3.Distance(PlayerController.playerTransform.position, position);
+                                    if (dist2 < dist1)
+                                    {
+                                        QuestManager.i.chmcken.position = position;
+                                    }
+                                }
+                                else if (structure.name.ToUpper() == "WIRE")
+                                {
+                                    float dist1 = Vector3.Distance(PlayerController.playerTransform.position, QuestManager.i.wire.position);
+                                    float dist2 = Vector3.Distance(PlayerController.playerTransform.position, position);
+                                    if (dist2 < dist1)
+                                    {
+                                        QuestManager.i.wire.position = position;
+                                    }
+                                }
+
+                                if (DEBUG)
+                                    print($"Generated ${structure.name} At: {position}");
+                            }
+                        }
                     }
                 }
+
             }
         }
         return true;

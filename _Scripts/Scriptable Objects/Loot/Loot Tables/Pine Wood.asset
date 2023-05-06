@@ -15,11 +15,11 @@ MonoBehaviour:
   lootTableValues:
   - item: {fileID: 11400000, guid: 056399d82785b694ea9741e4614d03fb, type: 2}
     quantities:
-    - prize: 1
-      chance: 1
-    - prize: 2
-      chance: 0.4
     - prize: 3
+      chance: 1
+    - prize: 6
       chance: 0.4
-    - prize: 4
-      chance: 0.05
+    - prize: 9
+      chance: 0.3
+    - prize: 17
+      chance: 0.2
